@@ -1,0 +1,1 @@
+{% extends 'placement/base.html' %}{% block content %}<h2>Company Management</h2><form method="post" class="card p-3 mb-4">{% csrf_token %}{{form.as_p}}<button class="btn btn-primary">Add company</button></form>{% for c in companies %}<div class="card p-3 mb-2">{{c.name}} · {{c.code}} · {{c.location}}</div>{% endfor %}{% endblock %}

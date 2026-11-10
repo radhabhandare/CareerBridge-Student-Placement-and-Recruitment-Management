@@ -1,0 +1,81 @@
+{% extends 'placement/base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">Student Approvals</h2>
+
+{% for s in students %}
+
+<div class="card p-3 mb-3 shadow-sm">
+
+    <h5>{{ s.first_name }} {{ s.last_name }}</h5>
+
+    <p class="mb-1">
+        <strong>Registration:</strong>
+        {{ s.registration_number }}
+    </p>
+
+    <p class="mb-1">
+        <strong>Email:</strong>
+        {{ s.user.email }}
+    </p>
+
+    <p class="mb-1">
+        <strong>Approval:</strong>
+        {{ s.get_approval_status_display }}
+    </p>
+
+    <p class="mb-2">
+        <strong>Activation:</strong>
+
+        {% if s.activated %}
+            <span class="text-success">Activated</span>
+        {% else %}
+            <span class="text-danger">Not Activated</span>
+        {% endif %}
+    </p>
+
+    <div class="d-flex gap-2 mt-2 flex-wrap">
+
+        {% if s.approval_status == 'PENDING' %}
+
+            <form method="post" action="{% url 'approve' s.pk %}">
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-success btn-sm">
+                    Approve
+                </button>
+            </form>
+
+            <form method="post" action="{% url 'reject' s.pk %}">
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-danger btn-sm">
+                    Reject
+                </button>
+            </form>
+
+        {% elif s.approval_status == 'APPROVED' and not s.activated and not s.user.is_active %}
+
+            <form method="post" action="{% url 'resend_activation' s.pk %}">
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="bi bi-envelope"></i>
+                    Resend Activation Email
+                </button>
+            </form>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% empty %}
+
+<p>No students found.</p>
+
+{% endfor %}
+
+{% endblock %}
